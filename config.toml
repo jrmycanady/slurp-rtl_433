@@ -1,0 +1,34 @@
+
+
+# The path to the output file from rtl_433
+# dataLocation = "rtl_433.out*"
+# logFilePath = ""
+# logLevels = ["info","error"]
+
+# Configuration parameters for InfluxDB connectivity.
+[InfluxDB]
+# The FQDN or IP address of the InfluxDB server.
+# fqdn = "localhost
+
+# The port to connec to InfluxDB on.
+# port = 8086
+
+# The username used when connecting to InfluxDB. If empty no authentication is 
+# attempted.
+# username = """
+
+# The password used when connecting to InfluxDB.
+# password = ""
+
+# The database to use.
+# database = "slurp-rtl_433"
+
+# The definitions in this section allow adding meta data to the records based
+# on the data received. Use the following format to achieve it.
+#
+# [Meta."name of device"."name of measurement"."value"]
+# metadata_name = value
+# 
+# Example: Adding room tag to all entries from device 2.
+# [Meta."Abient Weather Temperature Sensor".device.2]
+# room = "upstairs"
