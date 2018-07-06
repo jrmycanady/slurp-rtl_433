@@ -99,8 +99,10 @@ func runTest2() {
 	var n int
 	var buffSize = 10
 	var buff = make([]byte, buffSize)
-	var lf = []byte("\n")
-	var cr = []byte("\r")
+	// var lf = []byte("\n")
+	// var cr = []byte("\r")
+	var lf byte = 10
+	var cr byte = 13
 	var line = make([]byte, 0, 200)
 	var offset int64
 
@@ -121,7 +123,7 @@ func runTest2() {
 				// [    0:3    ][ 3:4 ][  i+1: ]  0:9
 				// [    0:i    ][i:i+1]
 				switch {
-				case buff[i] == cr[0]:
+				case buff[i] == cr:
 					// Add anything before the \r to the line and saving it.
 					line = append(line, buff[:i]...)
 					if len(line) > 0 {
@@ -132,7 +134,7 @@ func runTest2() {
 
 					// Checking to see if the returned data is larger enough for another character
 					// and if so contains a line feed. If so kick it out by pushing i up one.
-					if (i+1 < n) && buff[i+1] == lf[0] {
+					if (i+1 < n) && buff[i+1] == lf {
 						i++
 					}
 
@@ -142,7 +144,7 @@ func runTest2() {
 					}
 					continue LINELOOP
 
-				case buff[i] == lf[0]:
+				case buff[i] == lf:
 					// Should only reach here if no \r was found. So simply add everything before to the line,
 					// save it. Then add anythign left to he new line.
 					line = append(line, buff[:i]...)
@@ -181,8 +183,10 @@ func runTest3() {
 	var n int
 	var buffSize = 10
 	var buff = make([]byte, buffSize)
-	var lf = []byte("\n")
-	var cr = []byte("\r")
+	// var lf = []byte("\n")
+	// var cr = []byte("\r")
+	var lf byte = 10
+	var cr byte = 13
 	var line = make([]byte, 0, 200)
 	var offset int64
 
@@ -203,7 +207,7 @@ func runTest3() {
 				// [    0:3    ][ 3:4 ][  i+1: ]  0:9
 				// [    0:i    ][i:i+1]
 				switch {
-				case buff[i] == cr[0]:
+				case buff[i] == cr:
 					// Add anything before the \r to the line and saving it.
 					line = append(line, buff[startIndex:i]...)
 					if len(line) > 0 {
@@ -214,7 +218,7 @@ func runTest3() {
 
 					// Checking to see if the returned data is larger enough for another character
 					// and if so contains a line feed. If so kick it out by pushing i up one.
-					if (i+1 < n) && buff[i+1] == lf[0] {
+					if (i+1 < n) && buff[i+1] == lf {
 						i++
 					}
 
@@ -227,7 +231,7 @@ func runTest3() {
 					// }
 					continue
 
-				case buff[i] == lf[0]:
+				case buff[i] == lf:
 					// Should only reach here if no \r was found. So simply add everything before to the line,
 					// save it. Then add anythign left to he new line.
 					line = append(line, buff[startIndex:i]...)

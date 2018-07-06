@@ -15,8 +15,8 @@ type FileRequest struct {
 }
 
 const (
-// var lf = []byte("\n")
-// var cr = []byte("\r")
+	lf byte = 10
+	cr byte = 13
 )
 
 // Slurper slurps files that are provided on the file channel and provides the results
