@@ -31,7 +31,7 @@ func main() {
 	pflag.Parse()
 
 	if *cTest {
-		runTest2()
+		runTest3()
 	}
 
 	// Loading configuration from file and args.

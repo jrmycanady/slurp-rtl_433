@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 )
 
 // p checks the error e and panics if it's not null.
@@ -96,64 +97,162 @@ func runTest2() {
 	defer f.Close()
 
 	var n int
-	var buff = make([]byte, 10)
+	var buffSize = 10
+	var buff = make([]byte, buffSize)
 	var lf = []byte("\n")
 	var cr = []byte("\r")
 	var line = make([]byte, 0, 200)
-LINELOOP:
-	for err != io.EOF {
-		// Reading up to the buffer length.
-		n, err = f.Read(buff)
+	var offset int64
 
-		// Check each character in the buffer for line feed \n or carraige return \r.
-		// Finding it means the line has ended and we should save it off.
-		for i := 0; i < n; i++ {
+	for {
+		_, err = f.Seek(offset, 0)
+		p(err)
 
-			// [v][f][f][cr][  lf ][x][x][x] n = 8
-			// [    0:3    ][ 3:4 ][  i+1: ]  0:9
-			// [    0:i    ][i:i+1]
-			switch {
-			case buff[i] == cr[0]:
-				// Add anything before the \r to the line and saving it.
-				line = append(line, buff[:i]...)
-				if len(line) > 0 {
-					fmt.Printf("FOUND LINE: [%s]\n", string(line))
+	LINELOOP:
+		for err != io.EOF {
+			// Reading up to the buffer length.
+			n, err = f.Read(buff)
+
+			// Check each character in the buffer for line feed \n or carraige return \r.
+			// Finding it means the line has ended and we should save it off.
+			for i := 0; i < n; i++ {
+
+				// [v][f][f][cr][  lf ][x][x][x] n = 8
+				// [    0:3    ][ 3:4 ][  i+1: ]  0:9
+				// [    0:i    ][i:i+1]
+				switch {
+				case buff[i] == cr[0]:
+					// Add anything before the \r to the line and saving it.
+					line = append(line, buff[:i]...)
+					if len(line) > 0 {
+						fmt.Printf("FOUND LINE: [%s]\n", string(line))
+						offset += int64(len(line)) + 2 // Adding 2 for \r\n
+					}
+					line = line[:0]
+
+					// Checking to see if the returned data is larger enough for another character
+					// and if so contains a line feed. If so kick it out by pushing i up one.
+					if (i+1 < n) && buff[i+1] == lf[0] {
+						i++
+					}
+
+					// If there is data left, add it to the line.
+					if i+1 < n {
+						line = append(line, buff[i+1:]...)
+					}
+					continue LINELOOP
+
+				case buff[i] == lf[0]:
+					// Should only reach here if no \r was found. So simply add everything before to the line,
+					// save it. Then add anythign left to he new line.
+					line = append(line, buff[:i]...)
+					// Saving the line if not empty.
+					if len(line) > 0 {
+						fmt.Printf("FOUND LINE: [%s]\n", string(line))
+						offset += int64(len(line)) + 1 // Adding 1 for \n
+					}
+
+					line = line[:0]
+
+					if i+1 < n {
+						line = append(line, buff[i+1:]...)
+					}
+
+					continue LINELOOP
 				}
-				line = line[:0]
-
-				// Checking to see if the returned data is larger enough for another character
-				// and if so contains a line feed. If so kick it out by pushing i up one.
-				if (i+1 < n) && buff[i+1] == lf[0] {
-					i++
-				}
-
-				// If there is data left, add it to he line.
-				if i+1 < n {
-					line = append(line, buff[i+1:]...)
-				}
-				continue LINELOOP
-
-			case buff[i] == lf[0]:
-				// Should only reach here if no \r was found. So simply add everything before to the line,
-				// save it. Then add anythign left to he new line.
-				line = append(line, buff[:i]...)
-				// Saving the line if not empty.
-				if len(line) > 0 {
-					fmt.Printf("FOUND LINE: [%s]\n", string(line))
-				}
-
-				line = line[:0]
-
-				if i+1 < n {
-					line = append(line, buff[i+1:]...)
-				}
-
-				continue LINELOOP
 			}
+
+			// Add all data from the buffer
+			line = append(line, buff[:n]...)
 		}
 
-		// Add all data from the buffer
-		line = append(line, buff[:n]...)
+		time.Sleep(time.Duration(30) * time.Second)
 	}
+}
 
+func runTest3() {
+
+	fmt.Println("running test")
+
+	f, err := os.Open("example_data/test.log")
+	p(err)
+	defer f.Close()
+
+	var n int
+	var buffSize = 10
+	var buff = make([]byte, buffSize)
+	var lf = []byte("\n")
+	var cr = []byte("\r")
+	var line = make([]byte, 0, 200)
+	var offset int64
+
+	for {
+		_, err = f.Seek(offset, 0)
+		p(err)
+
+		for err != io.EOF {
+			// Reading up to the buffer length.
+			n, err = f.Read(buff)
+
+			// Check each character in the buffer for line feed \n or carraige return \r.
+			// Finding it means the line has ended and we should save it off. Then continue on.
+			var startIndex = 0
+			for i := 0; i < n; i++ {
+
+				// [v][f][f][cr][  lf ][x][x][x] n = 8
+				// [    0:3    ][ 3:4 ][  i+1: ]  0:9
+				// [    0:i    ][i:i+1]
+				switch {
+				case buff[i] == cr[0]:
+					// Add anything before the \r to the line and saving it.
+					line = append(line, buff[startIndex:i]...)
+					if len(line) > 0 {
+						fmt.Printf("FOUND LINE: [%s]\n", string(line))
+						offset += int64(len(line)) + 2 // Adding 2 for \r\n
+					}
+					line = line[:0]
+
+					// Checking to see if the returned data is larger enough for another character
+					// and if so contains a line feed. If so kick it out by pushing i up one.
+					if (i+1 < n) && buff[i+1] == lf[0] {
+						i++
+					}
+
+					// Update the start index to be the next value.
+					startIndex = i + 1
+
+					// If there is data left, add it to the line.
+					// if i+1 < n {
+					// 	line = append(line, buff[i+1:]...)
+					// }
+					continue
+
+				case buff[i] == lf[0]:
+					// Should only reach here if no \r was found. So simply add everything before to the line,
+					// save it. Then add anythign left to he new line.
+					line = append(line, buff[startIndex:i]...)
+					// Saving the line if not empty.
+					if len(line) > 0 {
+						fmt.Printf("FOUND LINE: [%s]\n", string(line))
+						offset += int64(len(line)) + 1 // Adding 1 for \n
+					}
+
+					line = line[:0]
+					// Update the start index to be the next value.
+					startIndex = i + 1
+
+					// if i+1 < n {
+					// 	line = append(line, buff[i+1:]...)
+					// }
+
+					continue
+				}
+			}
+
+			// Add all data from the buffer
+			line = append(line, buff[startIndex:n]...)
+		}
+
+		time.Sleep(time.Duration(30) * time.Second)
+	}
 }
