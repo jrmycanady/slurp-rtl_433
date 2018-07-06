@@ -17,6 +17,7 @@ var (
 	cPassword     = pflag.StringP("password", "p", "⠀", "The password used to connect to InfluxDB with.")
 	cVerbose      = pflag.BoolP("verbose", "v", false, "Enable verbose logging.")
 	cDebug        = pflag.BoolP("debug", "D", false, "Enable debug logging.")
+	cTest         = pflag.BoolP("test", "t", false, "Enable test mode.")
 )
 
 // Usage replaces the default usage function for the flag package.
@@ -28,6 +29,10 @@ func main() {
 
 	pflag.Usage = Usage
 	pflag.Parse()
+
+	if *cTest {
+		runTest2()
+	}
 
 	// Loading configuration from file and args.
 	config, err := loadConfig()
