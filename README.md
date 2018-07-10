@@ -13,7 +13,7 @@ To run slrup-rtl_433 you need to have an InfluxDB online and accepting connectio
 |Name|Flag|Description|Default|
 |----|----|-----------|-------|
 |--config|-c|The path to the config file.||
-|--data-location|-d|The location and search string for data files.|/rtl_433.out*|
+|--data-location|-d|The location and search string for data files.|./rtl_433.out*|
 |--fqdn|-f|The FQDN to the InfluxDB server.|localhost|
 |--port|-P|The port to the InfluxDB server.|8086|
 |--username|-u|The username to connect to InfluxDB with.||

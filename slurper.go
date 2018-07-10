@@ -10,6 +10,9 @@ import (
 	"github.com/jrmycanady/slurp-rtl_433/logger"
 )
 
+// FileRequest is a request for a sluper to sluper a file. It contains any parameters
+// such as where te file is (FilePath) where to start(Offset) and how much data
+// to pull at once (BufferSize)
 type FileRequest struct {
 	FilePath              string
 	Offset                int64
@@ -123,7 +126,7 @@ func saveLine(line []byte) error {
 	if err := json.Unmarshal(line, &aw); err != nil {
 		panic(err)
 	}
-	aw.Parse()
+	ParseTime(&aw)
 	fmt.Println(aw)
 
 	return nil
