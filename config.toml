@@ -1,9 +1,20 @@
 
 
 # The path to the output file from rtl_433
-# dataLocation = "rtl_433.out*"
+# dataLocation = "rtl_433.log"
+
+# The path to the log file.
 # logFilePath = ""
+
+# The log level to log. 
 # logLevels = ["info","error"]
+
+# The path to the meta data file. This file is used to track how much
+# of a log file has been read.
+# fileMetaDataPath = "./meta/"
+
+# The amount of time to wait between looking for new log files.
+# logFileCheckTimeSeconds
 
 # Configuration parameters for InfluxDB connectivity.
 [InfluxDB]

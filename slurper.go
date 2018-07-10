@@ -24,9 +24,15 @@ const (
 	// The byte value for a linefeed.
 	lf byte = 10
 
-	// The byte value for a carraige return.
+	// The byte value for a carriage return.
 	cr byte = 13
 )
+
+// A Slurper represents a Slurper instance that can monitor a file for new lines and process
+// the data into the specified database. Each slurper accepts a configuration on startup
+// and can provide status via mutex protected public methods.
+type Slurper struct {
+}
 
 // Slurper slurps files that are provided on the file channel and provides the results
 // to the processor channel.

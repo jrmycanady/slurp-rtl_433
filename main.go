@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/jrmycanady/slurp-rtl_433/logger"
 	"github.com/ogier/pflag"
@@ -55,8 +56,31 @@ func main() {
 		FilePath: config.DataLocation,
 	}
 
-	logger.Info.Println("starting sluper")
+	logger.Info.Println("starting slurper")
 	slurper(fr)
+
+	// Build filer
+	f := NewFiler(config)
+
+	cancel := make(chan struct{})
+	done := make(chan struct{})
+
+	go f.Start(cancel, done)
+
+	t := time.NewTimer(2 * time.Minute)
+	<-t.C
+	fmt.Println("sending cancel")
+	cancel <- struct{}{}
+	fmt.Println("sent cancel")
+
+	fmt.Println("waiting for done")
+	<-done
+
+	fmt.Println("done")
+
+	// Start slurpers on filer
+
+	// Wait for exit
 }
 
 // buildLogger creates new loggers based on the parameters found in the current
