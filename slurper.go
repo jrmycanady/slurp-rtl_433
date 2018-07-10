@@ -18,7 +18,10 @@ type FileRequest struct {
 }
 
 const (
+	// The byte value for a linefeed.
 	lf byte = 10
+
+	// The byte value for a carraige return.
 	cr byte = 13
 )
 

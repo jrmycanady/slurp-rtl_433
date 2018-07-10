@@ -17,7 +17,6 @@ var (
 	cPassword     = pflag.StringP("password", "p", "⠀", "The password used to connect to InfluxDB with.")
 	cVerbose      = pflag.BoolP("verbose", "v", false, "Enable verbose logging.")
 	cDebug        = pflag.BoolP("debug", "D", false, "Enable debug logging.")
-	cTest         = pflag.BoolP("test", "t", false, "Enable test mode.")
 )
 
 // Usage replaces the default usage function for the flag package.
@@ -60,6 +59,9 @@ func main() {
 	slurper(fr)
 }
 
+// buildLogger creates new loggers based on the parameters found in the current
+// configuration. If this never called the default is to log all levels out
+// to stdout.
 func buildLogger(config Config) (*os.File, error) {
 	var output *os.File
 	var err error
@@ -77,6 +79,9 @@ func buildLogger(config Config) (*os.File, error) {
 	return output, nil
 }
 
+// loadConfig loads the configuration file located the path provided on the commandline and
+// and augments based on any other commandline arguments. All commandline arguments supersede
+// the value found in the configuration file.
 func loadConfig() (Config, error) {
 
 	// Creating an default config or loading the config from file.
