@@ -30,10 +30,6 @@ func main() {
 	pflag.Usage = Usage
 	pflag.Parse()
 
-	if *cTest {
-		runTest3()
-	}
-
 	// Loading configuration from file and args.
 	config, err := loadConfig()
 	if err != nil {
@@ -55,7 +51,13 @@ func main() {
 	}
 	defer output.Close()
 
-	fmt.Println(config)
+	// Start slurping the file.
+	fr := FileRequest{
+		FilePath: config.DataLocation,
+	}
+
+	logger.Info.Println("starting sluper")
+	slurper(fr)
 }
 
 func buildLogger(config Config) (*os.File, error) {
