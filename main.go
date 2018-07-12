@@ -10,14 +10,15 @@ import (
 )
 
 var (
-	cPath         = pflag.StringP("config", "c", "⠀", "The path to he config file.")
-	cDataLocation = pflag.StringP("data-location", "d", "⠀", "The path and search string for the data to monitor.")
-	cFQDN         = pflag.StringP("fqdn", "f", "⠀", "The FQDN to the InfluxDB server.")
-	cPort         = pflag.IntP("port", "P", -1, "The port to the InfluxDB server.")
-	cUsername     = pflag.StringP("username", "u", "⠀", "The username used to connect to InfluxDB with.")
-	cPassword     = pflag.StringP("password", "p", "⠀", "The password used to connect to InfluxDB with.")
-	cVerbose      = pflag.BoolP("verbose", "v", false, "Enable verbose logging.")
-	cDebug        = pflag.BoolP("debug", "D", false, "Enable debug logging.")
+	cPath             = pflag.StringP("config", "c", "⠀", "The path to he config file.")
+	cDataLocation     = pflag.StringP("data-location", "d", "⠀", "The path and search string for the data to monitor.")
+	cMetaDataLocation = pflag.StringP("meta-data-location", "m", "⠀", "The meta data folder location.")
+	cFQDN             = pflag.StringP("fqdn", "f", "⠀", "The FQDN to the InfluxDB server.")
+	cPort             = pflag.IntP("port", "P", -1, "The port to the InfluxDB server.")
+	cUsername         = pflag.StringP("username", "u", "⠀", "The username used to connect to InfluxDB with.")
+	cPassword         = pflag.StringP("password", "p", "⠀", "The password used to connect to InfluxDB with.")
+	cVerbose          = pflag.BoolP("verbose", "v", false, "Enable verbose logging.")
+	cDebug            = pflag.BoolP("debug", "D", false, "Enable debug logging.")
 )
 
 // Usage replaces the default usage function for the flag package.
@@ -51,20 +52,13 @@ func main() {
 	}
 	defer output.Close()
 
-	// Start slurping the file.
-	fr := FileRequest{
-		FilePath: config.DataLocation,
-	}
-
-	logger.Info.Println("starting slurper")
-	slurper(fr)
-
 	// Build filer
 	f := NewFiler(config)
 
 	cancel := make(chan struct{})
 	done := make(chan struct{})
 
+	logger.Info.Println("starting filer to monitor files")
 	go f.Start(cancel, done)
 
 	t := time.NewTimer(2 * time.Minute)
@@ -131,7 +125,17 @@ func loadConfig() (Config, error) {
 		config.InfluxDB.Password = *cPassword
 	}
 	if *cDataLocation != "⠀" {
+		name, dir, err := splitLogPath(*cDataLocation)
+		if err != nil {
+			return config, fmt.Errorf("failed to parse data directory")
+
+		}
+		config.dataFileDir = dir
+		config.dataFileName = name
 		config.DataLocation = *cDataLocation
+	}
+	if *cMetaDataLocation != "⠀" {
+		config.FileMetaDataPath = *cMetaDataLocation
 	}
 	if *cVerbose {
 		config.LogLevels = append(config.LogLevels, "verbose")

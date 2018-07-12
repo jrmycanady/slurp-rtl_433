@@ -55,7 +55,7 @@ func slurper(fileReq FileRequest) {
 
 	logger.Verbose.Printf("opened %s for slurping", fileReq.FilePath)
 
-	// Processing the file until somethign tells it to stop.
+	// Processing the file until something tells it to stop.
 	for {
 		// Seeking to the last location not recorded.
 		_, err = f.Seek(offset, 0)
