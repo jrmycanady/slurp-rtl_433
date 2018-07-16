@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/jrmycanady/slurp-rtl_433/logger"
 	"github.com/ogier/pflag"
@@ -52,6 +53,10 @@ func main() {
 	}
 	defer output.Close()
 
+	// Build signal channel to catch.
+	signals := make(chan os.Signal)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+
 	// Build filer
 	f := NewFiler(config)
 
@@ -61,8 +66,8 @@ func main() {
 	logger.Info.Println("starting filer to monitor files")
 	go f.Start(cancel, done)
 
-	t := time.NewTimer(2 * time.Minute)
-	<-t.C
+	<-signals
+	logger.Info.Println("received term signal, shutting down now")
 	fmt.Println("sending cancel")
 	cancel <- struct{}{}
 	fmt.Println("sent cancel")

@@ -37,9 +37,11 @@ type LogFile struct {
 func (l *LogFile) StartSlurp() {
 	// Don't start a new slurp if it's already running.
 	if l.slurpRunning {
+		logger.Verbose.Printf("slurper already started for %s", l.LastKnownFilePath)
 		return
 	}
 	go l.slurp()
+	logger.Verbose.Printf("starting slurper for %s at offset %d", l.LastKnownFilePath, l.Offset)
 }
 
 // StopSlurp tells the slurper to stop.
