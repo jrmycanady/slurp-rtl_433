@@ -1,0 +1,1 @@
+* Add some sort of cache for failures or wait until they start going through. All others should backup on the channel.
