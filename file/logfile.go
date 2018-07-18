@@ -53,6 +53,9 @@ type LogFile struct {
 	// found is true when the filer has found the file, thus making it
 	// available for slurping.
 	found bool
+
+	// SlurperShutdownMaxWaitSeconds is the maximum seconds a slurper will wait to shutdown.
+	SlurperShutdownMaxWaitSeconds float64
 }
 
 // Found returns that found status of the LogFile. True if the LogFile has
@@ -181,6 +184,14 @@ func (l *LogFile) slurp(dataPointChan chan<- device.DataPoint, sleepTimeSeconds 
 
 		// Reading until we reach the end of the file.
 		for err != io.EOF {
+			// Check to see if we should stop.
+			select {
+			case <-l.slurpCancelChan:
+				logger.Verbose.Printf("stop for slurper on %s received", l.LogFilePath)
+				return
+			default:
+			}
+
 			// Reading up to the buffer length.
 			n, err = f.Read(buff)
 
@@ -260,7 +271,7 @@ func savePoint(line []byte, dataPointChan chan<- device.DataPoint) error {
 // StartSlurp starts slurping the file if possible and sending data to the
 // dataPointChan specified. sleepTimeSeconds is the amount of time the slurper
 // sleeps before looking for new data in the file. The minimum value is 1.
-func (l *LogFile) StartSlurp(dataPointChan chan<- device.DataPoint, sleepTimeSeconds int) {
+func (l *LogFile) StartSlurp(dataPointChan chan<- device.DataPoint, sleepTimeSeconds int, maxShutdownWait float64) {
 	// Don't start a new slurp if it's already running.
 	if l.slurpRunning {
 		logger.Verbose.Printf("slurper already started for %s", l.LogFilePath)
@@ -276,9 +287,15 @@ func (l *LogFile) StopSlurp() {
 		return
 	}
 	close(l.slurpCancelChan)
+	start := time.Now()
 	for l.SlurpRunning() {
+		if time.Since(start).Seconds() > l.SlurperShutdownMaxWaitSeconds {
+			logger.Verbose.Printf("forcing slurp of %s to stop due to exceeding limit", l.LogFilePath)
+			return
+		}
 		logger.Debug.Printf("slurpRunning is: %v", l.SlurpRunning())
 		time.Sleep(time.Duration(1) * time.Second)
+
 	}
 	logger.Verbose.Printf("slurper for %s has stopped: ", l.LogFilePath)
 	return

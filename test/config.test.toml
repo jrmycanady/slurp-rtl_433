@@ -43,7 +43,7 @@ password = "#kndnfe$h2243"
 database = "temps"
 
 # The number of datapoints that will trigger a datapoint dump to InfluxDB.
-flushDataPointCount= 200
+flushDataPointCount= 300
 
 # The maximum time slurp-rtl_433 will wait until it dumps all the points it
 # has to InfluxDB.

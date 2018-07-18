@@ -23,17 +23,18 @@ var (
 
 // Config represents the configuration for a slurp-rtl_433 instance.
 type Config struct {
-	DataLocation                string
-	DataFileName                string
-	DataFileDir                 string
-	LogFilePath                 string
-	FileMetaDataPath            string
-	FilerShutdownMaxWaitSeconds int
-	LogFileCheckTimeSeconds     int
-	LogLevels                   []string
-	InfluxDB                    InfluxDBConfig
-	SlurpSleepTimeSeconds       int
-	Meta                        map[string]map[string]MetaDataFieldSet
+	DataLocation                  string
+	DataFileName                  string
+	DataFileDir                   string
+	LogFilePath                   string
+	FileMetaDataPath              string
+	FilerShutdownMaxWaitSeconds   int
+	SlurperShutdownMaxWaitSeconds float64
+	LogFileCheckTimeSeconds       int
+	LogLevels                     []string
+	InfluxDB                      InfluxDBConfig
+	SlurpSleepTimeSeconds         int
+	Meta                          map[string]map[string]MetaDataFieldSet
 }
 
 // MetaDataFieldSet contains the set of comaprison values and new fields
@@ -52,18 +53,19 @@ type InfluxDBConfig struct {
 	Database            string
 	HTTPS               bool
 	FlushDataPointCount int
-	FlushTimeTrigger    int
+	FlushTimeTrigger    float64
 }
 
 // NewConfig generates a new empty configuration.
 func NewConfig() Config {
 	return Config{
-		DataLocation:                "rtl_433.log",
-		FileMetaDataPath:            "./meta/",
-		LogLevels:                   []string{"info", "error"},
-		SlurpSleepTimeSeconds:       5,
-		LogFileCheckTimeSeconds:     30,
-		FilerShutdownMaxWaitSeconds: 20,
+		DataLocation:                  "rtl_433.log",
+		FileMetaDataPath:              "./meta/",
+		LogLevels:                     []string{"info", "error"},
+		SlurpSleepTimeSeconds:         5,
+		LogFileCheckTimeSeconds:       30,
+		FilerShutdownMaxWaitSeconds:   20,
+		SlurperShutdownMaxWaitSeconds: 10,
 		InfluxDB: InfluxDBConfig{
 			FQDN:                "localhost",
 			Port:                8086,

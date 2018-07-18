@@ -76,8 +76,6 @@ func ProcessMetaDataFieldSet(pTags map[string]string, f *config.MetaDataFieldSet
 			// Comparing names to determine if they match. If they don't then
 			// the fieldset doesn't apply and we return.
 			if pT == mT {
-				fmt.Printf("%s[%s]   ::    %s[%s]\n", mT, f.CompEqualTags[mT], pT, pTags[pT])
-				// fmt.Printf("%s <> %s", pTags[pT], f.CompEqualTags[mT])
 				if pTags[pT] != f.CompEqualTags[mT] {
 					return
 				}
@@ -85,12 +83,9 @@ func ProcessMetaDataFieldSet(pTags map[string]string, f *config.MetaDataFieldSet
 		}
 	}
 
-	fmt.Println("Match Found")
-
 	// If we made it to here then it does apply so add all the tags.
 	for k := range f.Tags {
 		pTags[k] = f.Tags[k]
 	}
 
-	fmt.Println(pTags)
 }

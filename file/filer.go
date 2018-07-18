@@ -153,7 +153,6 @@ func (f *Filer) Stop() {
 			return
 		}
 	}
-
 }
 
 // run is the primary working loop of the filer. It should be executed as a
@@ -295,7 +294,7 @@ func (f *Filer) findAndSlurpLogFiles() error {
 		if foundFile != nil {
 			logger.Verbose.Printf("file %s already known to filer, updating to found", files[i].Name())
 			foundFile.SetFound(true)
-			foundFile.StartSlurp(f.dropOffChan, f.cfg.SlurpSleepTimeSeconds)
+			foundFile.StartSlurp(f.dropOffChan, f.cfg.SlurpSleepTimeSeconds, f.cfg.SlurperShutdownMaxWaitSeconds)
 			continue
 		}
 
@@ -318,7 +317,7 @@ func (f *Filer) findAndSlurpLogFiles() error {
 			continue
 		}
 		f.Files[newFile.MetaDataID.String()] = newFile
-		newFile.StartSlurp(f.dropOffChan, f.cfg.SlurpSleepTimeSeconds)
+		newFile.StartSlurp(f.dropOffChan, f.cfg.SlurpSleepTimeSeconds, f.cfg.SlurperShutdownMaxWaitSeconds)
 	}
 	return nil
 

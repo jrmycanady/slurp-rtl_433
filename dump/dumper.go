@@ -62,15 +62,15 @@ func (d *Dumper) StopDump() {
 }
 
 // dumper listens on the dataPointsChan and proceses the datapoints as they come
-// in.
+// in. Dumper will flush the points once it reaches one of two situations. First
+// the dumper has up to FlushDataPointCount or it has been FlushTimeTrigger from
+// the last timer flush. It's currently possible for the time flush to run
+// shortly after a flush from a maximum data points.
 func (d *Dumper) dump() {
 	d.SetRunning(true)
 	defer d.SetRunning(false)
 
 	logger.Info.Println("dumper has entered the running state")
-
-	// flushTimerDuration := time.Duration(d.cfg.InfluxDB.FlushTimeTrigger) * time.Second
-	// flushTimer := time.NewTimer(flushTimerDuration)
 
 	bp, err := influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
 		Database:  d.cfg.InfluxDB.Database,
@@ -79,25 +79,9 @@ func (d *Dumper) dump() {
 	if err != nil {
 		panic(err)
 	}
+	lastFlushTime := time.Now()
 	for {
 		select {
-		// case <-flushTimer.C:
-		// 	if len(bp.Points()) == 0 {
-		// 		continue
-		// 	}
-		// 	if err := d.iClient.Write(bp); err != nil {
-		// 		logger.Error.Printf("failed to send points to InfluxDB: %s", err)
-		// 	} else {
-		// 		logger.Verbose.Printf("dumped %d datapoints to InfluxDB due to max time reached", len(bp.Points()))
-		// 	}
-		// 	flushTimer.Reset(time.Duration(flushTimerDuration))
-		// 	bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
-		// 		Database:  d.cfg.InfluxDB.Database,
-		// 		Precision: "s",
-		// 	})
-		// 	if err != nil {
-		// 		panic(err)
-		// 	}
 		case dp := <-d.dataPointsChan:
 			switch v := dp.(type) {
 			case *device.AmbientWeatherDataPoint:
@@ -105,21 +89,17 @@ func (d *Dumper) dump() {
 				if err != nil {
 					continue
 				}
-
 				bp.AddPoint(p)
 			}
 
-			// Send if full.
-			if len(bp.Points()) >= d.cfg.InfluxDB.FlushDataPointCount {
+			// Send if full or not sent in a while.
+			if len(bp.Points()) >= d.cfg.InfluxDB.FlushDataPointCount || time.Since(lastFlushTime).Seconds() >= d.cfg.InfluxDB.FlushTimeTrigger {
 				if err := d.iClient.Write(bp); err != nil {
 					logger.Error.Printf("failed to send points to InfluxDB: %s", err)
 				} else {
-					logger.Verbose.Printf("dumped %d datapoints to InfluxDB due to max points reached", len(bp.Points()))
+					logger.Verbose.Printf("dumped %d datapoints to InfluxDB", len(bp.Points()))
 				}
-				// if !flushTimer.Stop() {
-				// 	<-flushTimer.C
-				// }
-				// flushTimer.Reset(time.Duration(flushTimerDuration))
+
 				bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
 					Database:  d.cfg.InfluxDB.Database,
 					Precision: "s",
@@ -127,6 +107,7 @@ func (d *Dumper) dump() {
 				if err != nil {
 					panic(err)
 				}
+				lastFlushTime = time.Now()
 			}
 		case <-d.cancelChan:
 			logger.Info.Println("dumper has received a request to cancel")
