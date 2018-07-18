@@ -88,6 +88,7 @@ func main() {
 
 	// Stop dumper.
 	logger.Info.Println("stopping dumper")
+	dumper.StopDump()
 
 	logger.Info.Println("slurp-rtl_433 going to bed, good night")
 

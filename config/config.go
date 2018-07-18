@@ -61,7 +61,7 @@ func NewConfig() Config {
 			FQDN:                "localhost",
 			Port:                8086,
 			Database:            "slurp-rtl_433",
-			FlushDataPointCount: 100,
+			FlushDataPointCount: 200,
 			FlushTimeTrigger:    10,
 		},
 	}
