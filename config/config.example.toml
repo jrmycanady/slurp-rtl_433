@@ -50,11 +50,5 @@
 # flushTimeTrigger = 10
 
 # The definitions in this section allow adding meta data to the records based
-# on the data received. Use the following format to achieve it.
-#
-# [Meta."name of device"."name of measurement"."value"]
-# metadata_name = value
-# 
-# Example: Adding room tag to all entries from device 2.
-# [Meta."Abient Weather Temperature Sensor".device.2]
-# room = "upstairs"
+# on the data received. Use the following format to do so.
+# [Meta."device name"."Set1".Fields]

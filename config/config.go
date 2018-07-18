@@ -33,7 +33,14 @@ type Config struct {
 	LogLevels                   []string
 	InfluxDB                    InfluxDBConfig
 	SlurpSleepTimeSeconds       int
-	Meta                        map[string]map[string]map[string]map[string]interface{}
+	Meta                        map[string]map[string]MetaDataFieldSet
+}
+
+// MetaDataFieldSet contains the set of comaprison values and new fields
+// for processing on a new
+type MetaDataFieldSet struct {
+	Equals map[string]interface{}
+	Fields map[string]string
 }
 
 // InfluxDBConfig represents the configuration for an InfluxDB connection.

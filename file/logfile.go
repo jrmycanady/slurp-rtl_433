@@ -162,6 +162,14 @@ func (l *LogFile) slurp(dataPointChan chan<- device.DataPoint, sleepTimeSeconds 
 		var buff = make([]byte, 10)
 		var line = make([]byte, 0, 200)
 
+		// Check to see if we should stop.
+		select {
+		case <-l.slurpCancelChan:
+			logger.Verbose.Printf("stop for slurper on %s received", l.LogFilePath)
+			return
+		default:
+		}
+
 		// Seeking to the last location not recorded.
 		_, err = f.Seek(l.Offset, 0)
 		if err != nil {
@@ -231,12 +239,7 @@ func (l *LogFile) slurp(dataPointChan chan<- device.DataPoint, sleepTimeSeconds 
 			// Add all data from the buffer
 			line = append(line, buff[startIndex:n]...)
 		}
-		// Check to see if we should stop.
-		select {
-		case <-l.slurpCancelChan:
-			return
-		default:
-		}
+
 		// Sleeping until the next slurp.
 		time.Sleep(time.Duration(sleepTimeSeconds) * time.Second)
 	}
@@ -273,7 +276,10 @@ func (l *LogFile) StopSlurp() {
 		return
 	}
 	close(l.slurpCancelChan)
-	for !l.SlurpRunning() {
+	for l.SlurpRunning() {
+		logger.Debug.Printf("slurpRunning is: %v", l.SlurpRunning())
 		time.Sleep(time.Duration(1) * time.Second)
 	}
+	logger.Verbose.Printf("slurper for %s has stopped: ", l.LogFilePath)
+	return
 }

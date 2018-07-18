@@ -82,7 +82,7 @@ func NewFiler(cfg config.Config, dropOffChan chan<- device.DataPoint) *Filer {
 		cfg:         cfg,
 		configured:  true,
 		CancelChan:  make(chan struct{}),
-		doneChan:    make(chan struct{}),
+		doneChan:    make(chan struct{}, 2),
 		dropOffChan: dropOffChan,
 	}
 }
@@ -176,9 +176,13 @@ func (f *Filer) run() {
 			logger.Info.Println("cancel received, stopping all file slurpers")
 
 			for i := range f.Files {
+				logger.Verbose.Printf("stopping slurper for %s", f.Files[i].LogFilePath)
 				f.Files[i].StopSlurp()
+				logger.Debug.Printf("stopping of slurper for %s compelte", f.Files[i].LogFilePath)
 			}
 			f.shutdown()
+			logger.Info.Println("filer has stopped")
+			return
 		}
 	}
 }

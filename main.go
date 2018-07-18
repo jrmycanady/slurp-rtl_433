@@ -6,11 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/jrmycanady/slurp-rtl_433_v2/config"
-	"github.com/jrmycanady/slurp-rtl_433_v2/device"
-	"github.com/jrmycanady/slurp-rtl_433_v2/dump"
-	"github.com/jrmycanady/slurp-rtl_433_v2/file"
-	"github.com/jrmycanady/slurp-rtl_433_v2/logger"
+	"github.com/jrmycanady/slurp-rtl_433/config"
+	"github.com/jrmycanady/slurp-rtl_433/device"
+	"github.com/jrmycanady/slurp-rtl_433/dump"
+	"github.com/jrmycanady/slurp-rtl_433/file"
+	"github.com/jrmycanady/slurp-rtl_433/logger"
 	"github.com/ogier/pflag"
 )
 
