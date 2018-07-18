@@ -42,11 +42,12 @@ func main() {
 	// Loading configuration from file and args.
 	globalConfig, err := loadConfig()
 	if err != nil {
-		fmt.Printf("failed to load configuration\n")
+		fmt.Printf("failed to load configuration: %s\n", err)
 		if *cDebug {
 			fmt.Println(err)
-			return
+
 		}
+		return
 	}
 
 	// Configuring the logger to output file or stdout.
@@ -66,7 +67,7 @@ func main() {
 
 	logger.Info.Println("starting dumper")
 	dumpChan := make(chan device.DataPoint)
-	dumper := dump.NewDumper(globalConfig.InfluxDB, dumpChan)
+	dumper := dump.NewDumper(globalConfig, dumpChan)
 	if err := dumper.StartDump(); err != nil {
 		logger.Error.Printf("failed to start dumper: %s", err)
 		return
@@ -118,11 +119,13 @@ func buildLogger(cfg config.Config) (*os.File, error) {
 // and augments based on any other commandline arguments. All commandline arguments supersede
 // the value found in the configuration file.
 func loadConfig() (config.Config, error) {
+	var err error
 
 	// Creating an default config or loading the config from file.
 	cfg := config.NewConfig()
 	if *cPath != "⠀" {
-		cfg, err := config.LoadConfigFromFile(*cPath)
+		logger.Verbose.Printf("loading config from %s", *cPath)
+		cfg, err = config.LoadConfigFromFile(*cPath)
 		if err != nil {
 			return cfg, err
 		}

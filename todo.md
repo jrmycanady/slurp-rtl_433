@@ -9,6 +9,9 @@
     * Add ability to reference last value of a sensor to perform offset calcs. 
         * offset = (temp - device.2.temp)
         * Should only be done within x time range.
+* Add flush timer
+* Fix up flush datapoint count and make sure example shows true default.
+* Add slurper stop withink EOF loop too.
 
 ## DONE
 * Fix false report of stop timeout hitting.

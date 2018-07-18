@@ -14,7 +14,7 @@
 # fileMetaDataPath = "./meta/"
 
 # The amount of time to wait between looking for new log files.
-# logFileCheckTimeSeconds
+# logFileCheckTimeSeconds TODO
 
 # The amount of time a filer slurper will sleep before looking for new
 # data to process.
@@ -34,7 +34,7 @@
 
 # The username used when connecting to InfluxDB. If empty no authentication is 
 # attempted.
-# username = """
+# username = ""
 
 # The password used when connecting to InfluxDB.
 # password = ""
@@ -51,4 +51,7 @@
 
 # The definitions in this section allow adding meta data to the records based
 # on the data received. Use the following format to do so.
-# [Meta."device name"."Set1".Fields]
+# [Meta."device name"."Set1".CompEqualTags] # Compares these tags using ==
+# channel = 1
+# [Meta."device name"."Set1".Tags] # The tags that will get added.
+# room = "living room"

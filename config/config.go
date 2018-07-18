@@ -39,8 +39,8 @@ type Config struct {
 // MetaDataFieldSet contains the set of comaprison values and new fields
 // for processing on a new
 type MetaDataFieldSet struct {
-	Equals map[string]interface{}
-	Fields map[string]string
+	CompEqualTags map[string]string
+	Tags          map[string]string
 }
 
 // InfluxDBConfig represents the configuration for an InfluxDB connection.

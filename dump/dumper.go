@@ -15,19 +15,19 @@ type Dumper struct {
 	dataPointsChan <-chan device.DataPoint
 	cancelChan     chan struct{}
 	doneChan       chan struct{}
-	influxConfig   config.InfluxDBConfig
+	cfg            config.Config
 	iClient        influxClient.Client
 	lock           *sync.Mutex
 	running        bool
 }
 
 // NewDumper creates a new dumper instance that is ready to start.
-func NewDumper(influxConfig config.InfluxDBConfig, dataPointChan <-chan device.DataPoint) *Dumper {
+func NewDumper(cfg config.Config, dataPointChan <-chan device.DataPoint) *Dumper {
 	return &Dumper{
 		dataPointsChan: dataPointChan,
 		cancelChan:     make(chan struct{}),
 		doneChan:       make(chan struct{}),
-		influxConfig:   influxConfig,
+		cfg:            cfg,
 		lock:           &sync.Mutex{},
 	}
 }
@@ -44,7 +44,7 @@ func (d *Dumper) SetRunning(state bool) {
 func (d *Dumper) StartDump() error {
 
 	// Building influxdb client.
-	iClient, err := buildInfluxClient(d.influxConfig)
+	iClient, err := buildInfluxClient(d.cfg)
 	if err != nil {
 		return err
 	}
@@ -69,11 +69,11 @@ func (d *Dumper) dump() {
 
 	logger.Info.Println("dumper has entered the running state")
 
-	// flushTimerDuration := time.Duration(d.influxConfig.FlushTimeTrigger) * time.Second
+	// flushTimerDuration := time.Duration(d.cfg.InfluxDB.FlushTimeTrigger) * time.Second
 	// flushTimer := time.NewTimer(flushTimerDuration)
 
 	bp, err := influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
-		Database:  d.influxConfig.Database,
+		Database:  d.cfg.InfluxDB.Database,
 		Precision: "s",
 	})
 	if err != nil {
@@ -92,7 +92,7 @@ func (d *Dumper) dump() {
 		// 	}
 		// 	flushTimer.Reset(time.Duration(flushTimerDuration))
 		// 	bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
-		// 		Database:  d.influxConfig.Database,
+		// 		Database:  d.cfg.InfluxDB.Database,
 		// 		Precision: "s",
 		// 	})
 		// 	if err != nil {
@@ -101,15 +101,16 @@ func (d *Dumper) dump() {
 		case dp := <-d.dataPointsChan:
 			switch v := dp.(type) {
 			case *device.AmbientWeatherDataPoint:
-				p, err := v.InfluxData()
+				p, err := v.InfluxData(d.cfg.Meta[device.AmbientWeatherModelName])
 				if err != nil {
 					continue
 				}
+
 				bp.AddPoint(p)
 			}
 
 			// Send if full.
-			if len(bp.Points()) >= d.influxConfig.FlushDataPointCount {
+			if len(bp.Points()) >= d.cfg.InfluxDB.FlushDataPointCount {
 				if err := d.iClient.Write(bp); err != nil {
 					logger.Error.Printf("failed to send points to InfluxDB: %s", err)
 				} else {
@@ -120,7 +121,7 @@ func (d *Dumper) dump() {
 				// }
 				// flushTimer.Reset(time.Duration(flushTimerDuration))
 				bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
-					Database:  d.influxConfig.Database,
+					Database:  d.cfg.InfluxDB.Database,
 					Precision: "s",
 				})
 				if err != nil {
@@ -136,18 +137,18 @@ func (d *Dumper) dump() {
 }
 
 // buildInfluxClient generates a new InfluxDB client based on the configuration provided.
-func buildInfluxClient(influxConfig config.InfluxDBConfig) (influxClient.Client, error) {
+func buildInfluxClient(config config.Config) (influxClient.Client, error) {
 	var err error
 	address := ""
-	if influxConfig.HTTPS {
-		address = fmt.Sprintf("https://%s:%d", influxConfig.FQDN, influxConfig.Port)
+	if config.InfluxDB.HTTPS {
+		address = fmt.Sprintf("https://%s:%d", config.InfluxDB.FQDN, config.InfluxDB.Port)
 	} else {
-		address = fmt.Sprintf("http://%s:%d", influxConfig.FQDN, influxConfig.Port)
+		address = fmt.Sprintf("http://%s:%d", config.InfluxDB.FQDN, config.InfluxDB.Port)
 	}
 	client, err := influxClient.NewHTTPClient(influxClient.HTTPConfig{
 		Addr:     address,
-		Username: influxConfig.Username,
-		Password: influxConfig.Password,
+		Username: config.InfluxDB.Username,
+		Password: config.InfluxDB.Password,
 	})
 	if err != nil {
 		return nil, err

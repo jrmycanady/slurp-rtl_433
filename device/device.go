@@ -8,6 +8,7 @@ import (
 	"time"
 
 	influx "github.com/influxdata/influxdb/client/v2"
+	"github.com/jrmycanady/slurp-rtl_433/config"
 )
 
 // DataPoint is in interface for interacting with differnet types of devices.
@@ -19,7 +20,7 @@ import (
 //
 // SetTime sets the time property of the DataPoint.
 type DataPoint interface {
-	InfluxData() (*influx.Point, error)
+	InfluxData(sets map[string]config.MetaDataFieldSet) (*influx.Point, error)
 	GetTimeStr() string
 	SetTime(t time.Time)
 }
@@ -53,7 +54,7 @@ func ParseDataPoint(d []byte) (DataPoint, error) {
 	}
 
 	switch b.Model {
-	case "Ambient Weather F007TH Thermo-Hygrometer":
+	case AmbientWeatherModelName:
 		a := AmbientWeatherDataPoint{}
 		if err = json.Unmarshal(d, &a); err != nil {
 			return nil, err
@@ -62,4 +63,34 @@ func ParseDataPoint(d []byte) (DataPoint, error) {
 	}
 
 	return nil, fmt.Errorf("unknown model: %s", b.Model)
+}
+
+// ProcessMetaDataFieldSet processes the field set by adding the tags
+// if the comparison values are true.
+func ProcessMetaDataFieldSet(pTags map[string]string, f *config.MetaDataFieldSet) {
+
+	// Processing each tag that needs a equalCompare.
+	for mT := range f.CompEqualTags {
+		// Looking at each tag to see if we have one to match.
+		for pT := range pTags {
+			// Comparing names to determine if they match. If they don't then
+			// the fieldset doesn't apply and we return.
+			if pT == mT {
+				fmt.Printf("%s[%s]   ::    %s[%s]\n", mT, f.CompEqualTags[mT], pT, pTags[pT])
+				// fmt.Printf("%s <> %s", pTags[pT], f.CompEqualTags[mT])
+				if pTags[pT] != f.CompEqualTags[mT] {
+					return
+				}
+			}
+		}
+	}
+
+	fmt.Println("Match Found")
+
+	// If we made it to here then it does apply so add all the tags.
+	for k := range f.Tags {
+		pTags[k] = f.Tags[k]
+	}
+
+	fmt.Println(pTags)
 }
