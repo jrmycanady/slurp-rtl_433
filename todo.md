@@ -9,6 +9,7 @@
         * Should only be done within x time range.
 * Dump points on dumper stop.
 * Support Humidity Offset
+* Correct name validation for log file due to number after name not before exentsion
 
 ## DONE
 * Add slurper stop within EOF loop too.

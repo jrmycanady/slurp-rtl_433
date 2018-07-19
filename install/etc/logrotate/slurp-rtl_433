@@ -1,0 +1,5 @@
+/var/log/slurp-rtl_433/slurp-rtl_433.log {
+	compress
+	size 5M
+	missingok
+}
