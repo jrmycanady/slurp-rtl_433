@@ -118,7 +118,7 @@ func (f *Filer) Start() error {
 
 	// Loading known log files from the meta data.
 	if err = f.loadLogMetaData(); err != nil {
-		logger.Error.Printf("failed to load let meta data files: %s", err)
+		logger.Error.Printf("failed to load log meta data files: %s", err)
 		f.shutdown()
 		return fmt.Errorf("failed to start filer: %s", err)
 	}

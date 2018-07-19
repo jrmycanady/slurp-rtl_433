@@ -1,0 +1,5 @@
+/var/logs/rtl_433/rtl_433.log {
+	nocompress
+	size 5M
+	missingok
+}
