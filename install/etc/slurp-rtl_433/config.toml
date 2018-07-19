@@ -1,0 +1,57 @@
+
+
+# The path to the output file from rtl_433
+dataLocation = "/var/log/rtl_433/data/rtl_433_data.log"
+
+# The path to the log file.
+logFilePath = "/var/log/slurp-rtl_433/slurp-rtl_433.log"
+
+# The log level to log. 
+# logLevels = ["info","error"]
+
+# The path to the meta data file. This file is used to track how much
+# of a log file has been read.
+fileMetaDataPath = "/var/lib/slurp-rtl_433/meta/"
+
+# The amount of time to wait between looking for new log files.
+# logFileCheckTimeSeconds TODO
+
+# The amount of time a filer slurper will sleep before looking for new
+# data to process.
+# slurpSleepTimeSeconds = 5
+
+# The maximum amount of time the filer will wait on sub routines until it
+# will force a shutdown. 
+# filerShutdownMaxWaitSeconds = 20
+
+# Configuration parameters for InfluxDB connectivity.
+[InfluxDB]
+# The FQDN or IP address of the InfluxDB server.
+# fqdn = "localhost
+
+# The port to connec to InfluxDB on.
+# port = 8086
+
+# The username used when connecting to InfluxDB. If empty no authentication is 
+# attempted.
+# username = ""
+
+# The password used when connecting to InfluxDB.
+# password = ""
+
+# The database to use.
+# database = "rtl_433"
+
+# The number of datapoints that will trigger a datapoint dump to InfluxDB.
+#flushDataPointCount= 100
+
+# The maximum time slurp-rtl_433 will wait until it dumps all the points it
+# has to InfluxDB.
+# flushTimeTrigger = 10
+
+# The definitions in this section allow adding meta data to the records based
+# on the data received. Use the following format to do so.
+# [Meta."device name"."Set1".CompEqualTags] # Compares these tags using ==
+# channel = 1
+# [Meta."device name"."Set1".Tags] # The tags that will get added.
+# room = "living room"
