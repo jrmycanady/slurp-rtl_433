@@ -8,6 +8,7 @@ slurp-rtl_433 relies upon the rtl_433 process being redirected to a file. The RP
 
 ## Exectuable Flags
 The example configuration file provides information for all the options available. Additionally the config file can be opmitted completely or overwritten with any of the following flags.
+
 |long name|short|description|default|
 |---------|------|----------|-------|
 |--config|-c|The location of the configuration file.||
