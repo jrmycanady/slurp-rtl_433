@@ -1,7 +1,7 @@
 
 
 # The path to the output file from rtl_433
-# dataLocation = "rtl_433.log"
+# dataLocation = "rtl_433_data.log"
 
 # The path to the log file.
 # logFilePath = ""
@@ -40,10 +40,10 @@
 # password = ""
 
 # The database to use.
-# database = "slurp-rtl_433"
+# database = "rtl_433"
 
 # The number of datapoints that will trigger a datapoint dump to InfluxDB.
-#flushDataPointCount= 10
+#flushDataPointCount= 100
 
 # The maximum time slurp-rtl_433 will wait until it dumps all the points it
 # has to InfluxDB.

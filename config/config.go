@@ -69,8 +69,8 @@ func NewConfig() Config {
 		InfluxDB: InfluxDBConfig{
 			FQDN:                "localhost",
 			Port:                8086,
-			Database:            "slurp-rtl_433",
-			FlushDataPointCount: 200,
+			Database:            "rtl_433",
+			FlushDataPointCount: 100,
 			FlushTimeTrigger:    10,
 		},
 	}
