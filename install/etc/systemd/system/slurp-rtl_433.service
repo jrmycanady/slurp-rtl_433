@@ -1,0 +1,14 @@
+[Unit]
+Description=slur-rtl_433
+After=rtl_433.service
+
+[Service]
+User=root
+EnvironmentFile=-/etc/default/slurp-rtl_433
+ExecStart=/usr/bin/slurp-rtl_433 -c /etc/slurp-rtl_433/config.toml $SLURP_OPS
+
+Restart=on-failure
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

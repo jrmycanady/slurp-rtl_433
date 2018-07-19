@@ -1,0 +1,89 @@
+
+
+# The path to the output file from rtl_433
+dataLocation = "./test/example_logs/rtl_433_short.log"
+
+# The path to the log file.
+# logFilePath = ""
+
+# The log level to log. 
+logLevels = ["info","error","debug","verbose"]
+
+# The path to the meta data file. This file is used to track how much
+# of a log file has been read.
+fileMetaDataPath = "./test/example_meta"
+
+# The amount of time to wait between looking for new log files.
+# logFileCheckTimeSeconds TODO
+
+# The amount of time a filer slurper will sleep before looking for new
+# data to process.
+# slurpSleepTimeSeconds = 5
+
+# The maximum amount of time the filer will wait on sub routines until it
+# will force a shutdown. 
+# filerShutdownMaxWaitSeconds = 20
+
+# Configuration parameters for InfluxDB connectivity.
+[InfluxDB]
+# The FQDN or IP address of the InfluxDB server.
+fqdn = "192.168.20.252"
+
+# The port to connec to InfluxDB on.
+# port = 8086
+
+# The username used when connecting to InfluxDB. If empty no authentication is 
+# attempted.
+username = "data_dump_influx_user"
+
+# The password used when connecting to InfluxDB.
+password = "#kndnfe$h2243"
+
+# The database to use.
+database = "rtl_433"
+
+# The number of datapoints that will trigger a datapoint dump to InfluxDB.
+flushDataPointCount= 300
+
+# The maximum time slurp-rtl_433 will wait until it dumps all the points it
+# has to InfluxDB.
+# flushTimeTrigger = 10
+
+# The definitions in this section allow adding meta data to the records based
+# on the data received. Use the following format to do so.
+# [Meta."device name"."Set1".CompEqualTags] # Compares these tags using ==
+# channel = 1
+# [Meta."device name"."Set1".Tags] # The tags that will get added.
+# room = "living room"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."bens bedroom".CompEqualTags]
+channel = "1"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."bens bedroom".Tags]
+room = "bens bedroom"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."attic".CompEqualTags]
+channel = "2"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."attic".Tags]
+room = "attic"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."kates bedroom".CompEqualTags]
+channel = "3"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."kates bedroom".Tags]
+room = "kates bedroom"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."garage".CompEqualTags]
+channel = "4"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."garage".Tags]
+room = "garage"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."outside".CompEqualTags]
+channel = "5"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."outside".Tags]
+room = "outside back porch"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."fridge".CompEqualTags]
+channel = "6"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."fridge".Tags]
+room = "fridge"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."upstairs".CompEqualTags]
+channel = "7"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."upstairs".Tags]
+room = "upstairs"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."master bedroom".CompEqualTags]
+channel = "8"
+[Meta."Ambient Weather F007TH Thermo-Hygrometer"."master bedroom".Tags]
+room = "master bedroom"
