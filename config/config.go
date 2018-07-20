@@ -59,7 +59,7 @@ type InfluxDBConfig struct {
 // NewConfig generates a new empty configuration.
 func NewConfig() Config {
 	return Config{
-		DataLocation:                  "rtl_433.log",
+		DataLocation:                  "rtl_433_data.log",
 		FileMetaDataPath:              "./meta/",
 		LogLevels:                     []string{"info", "error"},
 		SlurpSleepTimeSeconds:         5,
