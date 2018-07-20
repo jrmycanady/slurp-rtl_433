@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -20,7 +19,7 @@ const (
 )
 
 var (
-	logFileRE = regexp.MustCompile(`^(?P<filename>.*)(\.\d*)?\.log$`)
+	logFileRE = regexp.MustCompile(`^(?P<filename>.*.log)(?:\.\d*)?$`)
 )
 
 // A Filer manages finding/identifying log files as well as starting/stopping
@@ -328,39 +327,17 @@ func (f *Filer) findAndSlurpLogFiles() error {
 // the name is valid otherwise it will return false. It will also return false
 // if the expected name does not end with .log.
 func validateLogFileName(expected string, found string) bool {
-	expName := expected[:len(expected)-4]
-	expExt := expected[len(expected)-4:]
 
-	foundName := found[:len(found)-4]
-	foundExt := found[len(found)-4:]
-
-	// Validating both files have proper extension.
-	if expExt != ".log" || foundExt != ".log" {
-		fmt.Println("not .log")
+	// validating format and pulling out name
+	results := logFileRE.FindSubmatch([]byte(found))
+	if len(results) != 2 {
+		fmt.Println("not long enough")
 		return false
 	}
 
-	// Validate it's long enough.
-	if len(expName) > len(foundName) {
+	if expected != string(results[1]) {
+		fmt.Printf("%s, %s, does not match", results[1], expected)
 		return false
-	}
-
-	// Validate name matches
-	if expName != foundName[:len(expName)] {
-		return false
-	}
-
-	if len(foundName) > len(expName) {
-		tick := foundName[len(expName):]
-		if tick[0] != dot {
-			return false
-		}
-
-		_, err := strconv.Atoi(tick[1:])
-		if err != nil {
-			return false
-		}
-
 	}
 
 	return true
