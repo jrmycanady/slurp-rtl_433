@@ -83,6 +83,7 @@ The follow are important file locations regarding the suggested installation gui
 
 # Supported Devices
 The following devices have definitions in slurp-rtl_433.
+
 |Brand|Model|Notes|
 |-----|-----|-----|
 |AcuRite|Rain Gauge||
@@ -121,6 +122,7 @@ The following devices have definitions in slurp-rtl_433.
 |Efergy|Optical||
 ||||
 |Elro|DB286A|Not supported. Waiting for elasticserach support.|
+||||
 |ELV| WS 2000|Not supported. Does not appear to support JSON output from rtl_433.|
 
 
