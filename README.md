@@ -85,9 +85,47 @@ The follow are important file locations regarding the suggested installation gui
 The following devices have definitions in slurp-rtl_433.
 |Brand|Model|Notes|
 |-----|-----|-----|
-|Acurite|Rain Gauge||
-|Acurite|609TXC Sensor||
-|Acurite|Lightning 6045M||
-|Acurite|Tower Sensor||
+|AcuRite|Rain Gauge||
+|AcuRite|609TXC Sensor||
+|AcuRite|Lightning 6045M||
+|AcuRite|Tower Sensor||
+|AcuRite|5n1 Sensor|Only supports the ACURITE_MSGTYPE_5N1_WINDSPEED_WINDDIR_RAINFALL. <sup>[1](#myfootnote1)</sup>|
+|AcuRite|986 Sensor|
+|AcuRite|606 Sensor|
+|AcuRite|00275rm|Not supported yet. <sup>[2]</sup>
+||||
+|Akhan|100F14||
 ||||
 |Ambient Weather|F007TH Thermo-Hygrometer||
+||||
+|Blyss|dc5-uk-wh|Not supported as appears to not be a universal config.|
+||||
+|Brennenstuhl|RCS 2044| Not supported. Waiting for elasticsearch support.|
+||||
+|Bresser|3CH Sensor||
+||||
+|Calibeur|RF-104||
+||||
+|Cardin|S466|Not supported. Waiting for elasticsaerch support.|
+||||
+|Chuango|Security Technology?|Not supported. Waiting for elasticsearch support.|
+||||
+|CurrentCost|TX?||
+||||
+|Danfoss|CFR Thermostat||
+||||
+|Dish|Remote 6.3|Not supported. Waiting for elasticsearch support.|
+|DSC|Contact?|Not supported. Waiting for elasticsearch support.|
+||||
+|Efergy|E2 Classic||
+|Efergy|Optical||
+||||
+|Elro|DB286A|Not supported. Waiting for elasticserach support.|
+|ELV| WS 2000|Not supported. Does not appear to support JSON output from rtl_433.|
+
+
+# Footnotes
+|note|Info|
+|----|----|
+|<a name="footnote1">1</a>|rtl_433 does not differentiate the output when it is sent. It's possible to process and determine the format being received but it's also possible to simply modify rtl_433 to include a field to denote the type. In either case if you happen to have this sensor and want the values let me know. Currently not spending any time on it unless there is a need.
+|<a name="footnote2">2</a>|Without sample output I am not sure what json is provided so I can't parse it yet. If you happen to have one of these and can provide sample output with the -F flag it can be added easily enough.

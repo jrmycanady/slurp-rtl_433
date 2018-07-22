@@ -85,6 +85,66 @@ func ParseDataPoint(d []byte) (DataPoint, error) {
 			return nil, err
 		}
 		return &a, nil
+	case AcuRite5n1SensorName:
+		a := AcuRite5n1SensorDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case AcuRite986SensorName:
+		a := AcuRite986SensorDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case AcuRite606TXSensorName:
+		a := AcuRite606TXSensorDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case Akhan100F14Name:
+		a := Akhan100F14DataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case Bresser3CHSensorName:
+		a := Bresser3CHSensorDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case CalibeurRF104Name:
+		a := CalibeurRF104DataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case CurrentCostTXName:
+		a := CurrentCostTXDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case DanfossCFRThermostatName:
+		a := DanfossCFRThermostatDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case EfergyE2CTName:
+		a := EfergyE2CTDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case EfergyOpticalName:
+		a := EfergyOpticalDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
 	}
 
 	return nil, fmt.Errorf("unknown model: %s", b.Model)
