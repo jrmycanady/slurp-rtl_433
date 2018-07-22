@@ -61,6 +61,30 @@ func ParseDataPoint(d []byte) (DataPoint, error) {
 			return nil, err
 		}
 		return &a, nil
+	case AcuRiteRainGaugeModelName:
+		a := AcuRiteRainGaugeDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case AcuRite609TXCSensorModelName:
+		a := AcuRite609TXCSensorDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case AcuRiteLightning6045MModelName:
+		a := AcuRiteLightning6045MDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
+	case AcuRiteTowerSensorModelName:
+		a := AcuRiteTowerSensorDataPoint{}
+		if err = json.Unmarshal(d, &a); err != nil {
+			return nil, err
+		}
+		return &a, nil
 	}
 
 	return nil, fmt.Errorf("unknown model: %s", b.Model)

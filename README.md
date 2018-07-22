@@ -80,3 +80,14 @@ The follow are important file locations regarding the suggested installation gui
 |rtl_433|/var/log/rtl_433/rtl_433.log|The output from rtl_433 stderr.|
 |rtl_433|/etc/systemd/system/rtl_433.service|systemd service file for rtl_433.|
 |rtl_433|/etc/logrotate/slurp-rtl_433|logrotate file for both rtl_433 logs.|
+
+# Supported Devices
+The following devices have definitions in slurp-rtl_433.
+|Brand|Model|Notes|
+|-----|-----|-----|
+|Acurite|Rain Gauge||
+|Acurite|609TXC Sensor||
+|Acurite|Lightning 6045M||
+|Acurite|Tower Sensor||
+||||
+|Ambient Weather|F007TH Thermo-Hygrometer||

@@ -31,18 +31,6 @@ type AmbientWeatherDataPoint struct {
 	Time         time.Time
 }
 
-// AmbientWeatherDataPointCompare represents a set of values for comparison to a
-// AmbientWeatherDatapoint.
-type AmbientWeatherDataPointCompare struct {
-	Model        *string  `json:"model"`
-	RTL433ID     *int     `json:"rtl_433_id"`
-	Device       *int     `json:"device"`
-	Channel      *int     `json:"channel"`
-	Battery      *string  `json:"battery"`
-	TemperatureF *float64 `json:"temperature_f"`
-	Humidity     *int     `json:"humidity"`
-}
-
 // GetTimeStr returns the string format of the time as provided by the device
 // output.
 func (a *AmbientWeatherDataPoint) GetTimeStr() string {
