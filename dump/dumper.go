@@ -11,6 +11,8 @@ import (
 	"github.com/jrmycanady/slurp-rtl_433/logger"
 )
 
+// Dumper represents the process that flushes datapoints to the differnet
+// output such as InfluxDB.
 type Dumper struct {
 	dataPointsChan <-chan device.DataPoint
 	cancelChan     chan struct{}
@@ -19,6 +21,7 @@ type Dumper struct {
 	iClient        influxClient.Client
 	lock           *sync.Mutex
 	running        bool
+	bp             influxClient.BatchPoints
 }
 
 // NewDumper creates a new dumper instance that is ready to start.
@@ -67,12 +70,13 @@ func (d *Dumper) StopDump() {
 // the last timer flush. It's currently possible for the time flush to run
 // shortly after a flush from a maximum data points.
 func (d *Dumper) dump() {
+	var err error
 	d.SetRunning(true)
 	defer d.SetRunning(false)
 
 	logger.Info.Println("dumper has entered the running state")
 
-	bp, err := influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
+	d.bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
 		Database:  d.cfg.InfluxDB.Database,
 		Precision: "s",
 	})
@@ -85,22 +89,13 @@ func (d *Dumper) dump() {
 		select {
 		case <-flushTicker.C:
 			logger.Debug.Println("flush ticker ticked")
-			if len(bp.Points()) == 0 {
+			if len(d.bp.Points()) == 0 {
 				continue
 			}
 			if time.Since(lastFlushTime).Seconds() >= d.cfg.InfluxDB.FlushTimeTrigger {
-				if err := d.iClient.Write(bp); err != nil {
-					logger.Error.Printf("failed to send points to InfluxDB: %s", err)
-				} else {
-					logger.Verbose.Printf("dumped %d datapoints to InfluxDB due to flush ticker", len(bp.Points()))
-				}
-
-				bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
-					Database:  d.cfg.InfluxDB.Database,
-					Precision: "s",
-				})
-				if err != nil {
-					panic(err)
+				if !d.flushUntilCancel() {
+					logger.Info.Println("dumper received a request to cancel during dumper flush")
+					return
 				}
 				lastFlushTime = time.Now()
 			}
@@ -113,35 +108,89 @@ func (d *Dumper) dump() {
 				if err != nil {
 					continue
 				}
-				bp.AddPoint(p)
+				d.bp.AddPoint(p)
 			}
 
 			logger.Debug.Printf("time until time flush: %f/%f", time.Since(lastFlushTime).Seconds(), d.cfg.InfluxDB.FlushTimeTrigger)
 
-			// Send if full or not sent in a while.
-			if len(bp.Points()) >= d.cfg.InfluxDB.FlushDataPointCount || time.Since(lastFlushTime).Seconds() >= d.cfg.InfluxDB.FlushTimeTrigger {
+			// Flush if full or not sent in a while.
+			if len(d.bp.Points()) >= d.cfg.InfluxDB.FlushDataPointCount || time.Since(lastFlushTime).Seconds() >= d.cfg.InfluxDB.FlushTimeTrigger {
 
-				if err := d.iClient.Write(bp); err != nil {
-					logger.Error.Printf("failed to send points to InfluxDB: %s", err)
-				} else {
-					logger.Verbose.Printf("dumped %d datapoints to InfluxDB", len(bp.Points()))
+				if !d.flushUntilCancel() {
+					logger.Info.Println("dumper received a request to cancel during dumper flush")
+					return
 				}
 
-				bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
-					Database:  d.cfg.InfluxDB.Database,
-					Precision: "s",
-				})
-				if err != nil {
-					panic(err)
-				}
 				lastFlushTime = time.Now()
 			}
 		case <-d.cancelChan:
 			logger.Info.Println("dumper has received a request to cancel")
+
+			// attempt to flush any points in flight.
+			if err = d.flush(); err != nil {
+				//TODO save points in flight.
+			}
 			return
 
 		}
 	}
+}
+
+// flush flushes the datapoints to influx if possible.
+func (d *Dumper) flush() error {
+	var err error
+
+	if err := d.iClient.Write(d.bp); err != nil {
+		return fmt.Errorf("failed to send points to InfluxDB %s", err)
+	}
+
+	// clearing out points.
+	d.bp, err = influxClient.NewBatchPoints(influxClient.BatchPointsConfig{
+		Database:  d.cfg.InfluxDB.Database,
+		Precision: "s",
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	logger.Info.Printf("dumped %d datapoints to InfluxDB", len(d.bp.Points()))
+	return nil
+}
+
+// flushUntilCancel flushes all the points found in the dumper. It only returns
+// once a flush is successful or a cancel is received. If ok the return
+// value will be false.
+// Upon failure it will wait 1 additional second for every 10 failures. It will
+// max out at 30 seconds of wait.
+func (d *Dumper) flushUntilCancel() (ok bool) {
+	var err error
+	err = fmt.Errorf("error")
+	failures := 0
+	failureWaitTime := 1
+	for err != nil {
+		if err = d.flush(); err != nil {
+			failures++
+
+			if failures%10 == 0 {
+				if failures < 30 {
+					failureWaitTime++
+				}
+			}
+
+			logger.Error.Printf("failed to send data to InfluxDB: %s", err)
+			logger.Info.Printf("waiting %d second before retry", failureWaitTime)
+			time.Sleep(time.Duration(failureWaitTime) * time.Second)
+		}
+		// Check for a cancel before trying again.
+		select {
+		case <-d.cancelChan:
+			//TODO save to disk points in flight.
+			return false
+		default:
+		}
+	}
+
+	return true
 }
 
 // buildInfluxClient generates a new InfluxDB client based on the configuration provided.

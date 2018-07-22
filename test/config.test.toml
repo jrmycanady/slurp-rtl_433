@@ -1,7 +1,7 @@
 
 
 # The path to the output file from rtl_433
-dataLocation = "./test/example_logs/rtl_433_short.log"
+dataLocation = "./test/example_logs/rtl_433.log"
 
 # The path to the log file.
 # logFilePath = ""
@@ -40,7 +40,7 @@ username = "data_dump_influx_user"
 password = "#kndnfe$h2243"
 
 # The database to use.
-database = "rtl_433"
+database = "rtl_test"
 
 # The number of datapoints that will trigger a datapoint dump to InfluxDB.
 flushDataPointCount= 300
