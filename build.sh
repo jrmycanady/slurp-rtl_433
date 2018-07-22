@@ -21,7 +21,7 @@ fpm -s dir -t rpm -n slurp-rtl_433 --config-files ./etc/slurp-rtl_433/config.tom
 mv ./slurp-rtl_433* ../builds/
 
 # generate deb
-fpm -s dir -t deb -n slurp-rtl_433 -v $1 ./
+fpm -s dir -t deb -n slurp-rtl_433 --config-files ./etc/slurp-rtl_433/config.toml -v $1 ./
 mv ./slurp-rtl-433* ../builds/
 
 # revert version
