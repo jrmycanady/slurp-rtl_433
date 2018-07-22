@@ -1,6 +1,8 @@
 # slurp-rtl_433
 slurp-rtl_433 is a simple executable that augments and dumps data from [rtl_433](https://github.com/merbanan/rtl_433) to [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) with plans to support [Elasticsearch](https://www.elastic.co/products). It may then be viewed with something like grafana or kibana.
 
+![](./docs/example.png)
+
 ## Installation
 slurp-rtl_433 relies upon the rtl_433 process being redirected to a file. The RPM will setup systemd services and such to handle this for you. If you happen to need to run rtl_433 yourself you can view the suggested installation guide that follows the PRM configuration to aid in setup for you.
 * Install Using RPM
