@@ -6,21 +6,24 @@ if [ "$#" -eq 0 ]; then
     exit
 fi
 
+BUILD="$(git rev-parse --verify --short HEAD)"
+
 # update version of exectuable for build
-sed -i "" 's/dev/'"$1"'/g' version.go
+sed -i 's/dev/'"$1"'/g' version.go
 
 # general build for linux
 # generate binary
-evn GOOS=linux GOARCH=amd64 go build -o ./install/usr/bin
+env GOOS=linux GOARCH=amd64 go build -o ./install/usr/bin/slurp-rtl_433
 
 # generate rpm
 cd ./install
-fpm -s dir -t rpm -n slurp-rtl_433 -v $1 ./
-mv slurp-rtl_433.* ../builds/
+fpm -s dir -t rpm -n slurp-rtl_433 --config-files ./etc/slurp-rtl_433/config.toml -v $1 ./
+mv ./slurp-rtl_433* ../builds/
 
 # generate deb
 fpm -s dir -t deb -n slurp-rtl_433 -v $1 ./
-mv slurp-rtl_433.* ../builds/
+mv ./slurp-rtl-433* ../builds/
 
 # revert version
-sed -i "" 's/'"$1"'/dev/g' version.go
+cd ..
+sed -i 's/'"$1"'/dev/g' version.go
