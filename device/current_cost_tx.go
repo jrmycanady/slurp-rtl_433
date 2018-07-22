@@ -2,7 +2,6 @@ package device
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	influx "github.com/influxdata/influxdb/client/v2"
@@ -44,7 +43,6 @@ func (a *CurrentCostTXDataPoint) SetTime(t time.Time) {
 func (a *CurrentCostTXDataPoint) InfluxData(sets map[string]config.MetaDataFieldSet) (*influx.Point, error) {
 	tags := map[string]string{
 		"model": a.Model,
-		"id":    strconv.Itoa(a.ID),
 	}
 	// Parsing any metadata for this type if we have some.
 	for _, set := range sets {
