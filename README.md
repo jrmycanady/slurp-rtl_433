@@ -20,6 +20,7 @@ The example configuration file provides information for all the options availabl
 |--database|-b|The name of the InfluxDB database to use.|rtl_433|
 |--verbose|-v|Enables verbose level logging.||
 |--debug|-D|Enabled debug level logging.||
+|--version|-V|Display version information.||
 
 
 ## Suggested Manual Installation Guide

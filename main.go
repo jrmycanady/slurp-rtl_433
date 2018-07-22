@@ -26,6 +26,7 @@ var (
 	cDatabase         = pflag.StringP("database", "b", "⠀", "The name of the InfluxDB database.")
 	cVerbose          = pflag.BoolP("verbose", "v", false, "Enable verbose logging.")
 	cDebug            = pflag.BoolP("debug", "D", false, "Enable debug logging.")
+	cVersion          = pflag.BoolP("version", "V", false, "Display version information.")
 )
 
 // Usage replaces the default usage function for the flag package.
@@ -38,6 +39,11 @@ func main() {
 
 	pflag.Usage = Usage
 	pflag.Parse()
+
+	if *cVersion {
+		fmt.Printf("slurp_rtL-433 version %s\n", version)
+		return
+	}
 
 	// Loading configuration from file and args.
 	globalConfig, err := loadConfig()
