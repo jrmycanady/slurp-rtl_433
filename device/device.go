@@ -1,4 +1,4 @@
-// Package devices contains the definitions of all devices that rtl_433 can
+// Package device contains the definitions of all devices that rtl_433 can
 // monitor. Each device must provide the InfluxDatapoint method.
 package device
 
