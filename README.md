@@ -90,10 +90,10 @@ The following devices have definitions in slurp-rtl_433.
 |AcuRite|609TXC Sensor||
 |AcuRite|Lightning 6045M||
 |AcuRite|Tower Sensor||
-|AcuRite|5n1 Sensor|Only supports the ACURITE_MSGTYPE_5N1_WINDSPEED_WINDDIR_RAINFALL. <sup>[1](#myfootnote1)</sup>|
+|AcuRite|5n1 Sensor|Only supports the ACURITE_MSGTYPE_5N1_WINDSPEED_WINDDIR_RAINFALL. <sup>[1](#footnote1)</sup>|
 |AcuRite|986 Sensor|
 |AcuRite|606 Sensor|
-|AcuRite|00275rm|Not supported yet. <sup>[2]</sup>
+|AcuRite|00275rm|Not supported yet. <sup>[2](#footnote2)</sup>
 ||||
 |Akhan|100F14||
 ||||
