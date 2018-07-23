@@ -8,7 +8,8 @@ EnvironmentFile=-/etc/default/rtl_433
 ExecStart=/usr/bin/start_rtl_433.sh $RTL_433
 
 RestartSec=10
-Restart=Always
+Restart=always
+RemainAfterExit=no
 
 [Install]
 WantedBy=multi-user.target
